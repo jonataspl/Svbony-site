@@ -30,7 +30,7 @@ telescopeJson.map((item, index) => {
 
   teleItem.querySelector(
     ".telescope-item--price"
-  ).innerHTML = `U$ ${item.price.toFixed(2)}`;
+  ).innerHTML = `U$ ${item.price}`;
 
   teleItem.querySelector(".telescope-item--name").innerHTML = item.name;
   teleItem.querySelector(".telescope-item--desc").innerHTML = item.description;
@@ -121,21 +121,58 @@ c(".telescopeInfo--qtmais").addEventListener("click", () => {
 });
 
 c(".telescopeInfo--addButton").addEventListener("click", () => {
-  let identifier = itemKey + "@" + itemSelected;
+  let identifier = telescopeJson[itemKey].id + "@" + itemSelected;
 
-  let keyVerification = cart.findIndex(
-    (item) => (item.identifier = identifier)
-  );
+  let keyVerification = cart.findIndex((item) => item.identifier == identifier);
 
   if (keyVerification > -1) {
     cart[keyVerification].Qnt += modalQnt;
   } else {
     cart.push({
       identifier,
-      id: itemKey,
+      id: telescopeJson[itemKey].id,
       size: itemSelected,
       Qnt: modalQnt,
     });
   }
+  updateCart();
   closeBox();
 });
+
+function updateCart() {
+  if (cart.length > 0) {
+    c("aside").classList.add("show");
+
+    c(".cart").innerHTML = "";
+
+    for (let i in cart) {
+      let teleItem = telescopeJson.find((item) => item.id == cart[i].id);
+      let cartItem = c(".models .cart--item").cloneNode(true);
+      let teleSizeName;
+      switch (cart[i].size) {
+        case 0:
+          teleSizeName = "Tamanho 1";
+          break;
+        case 1:
+          teleSizeName = "Tamanho 2";
+          break;
+        case 2:
+          teleSizeName = "Tamanho 3";
+          break;
+        case null:
+          teleSizeName = "Tamanho 1";
+          break;
+      }
+
+      let teleName = `${teleItem.name} (${teleSizeName})`;
+
+      cartItem.querySelector("img").src = teleItem.img;
+      cartItem.querySelector(".cart--item-nome").innerHTML = teleName;
+      //cartItem.querySelector(".cart--item-preco").innerHTML = teleItem.price;
+
+      c(".cart").append(cartItem);
+    }
+  } else {
+    c("aside").classList.remove("show");
+  }
+}
