@@ -4,23 +4,23 @@ function c(el) {
 }
 /**
  * facilitador para querySelectorAll
- * @param {*} selector - Um seletor CSS
+ * @param {*} selector - Um seconstor CSS
  * @returns Returna uma lista de elementos HTML
  */
 function cs(selector) {
   return document.querySelectorAll(selector);
 }
-let modalQnt = 1;
+var modalQnt = 1;
 
-let cart = [];
+const cart = [];
 
-let itemKey = 0;
+var itemKey = 0;
 
-let itemSelected = 0;
+var itemSelected = 0;
 
 telescopeJson.map((item, index) => {
   // prencher as informações em teleItem do telescope.js
-  let teleItem = c(".models .telescope-item").cloneNode(true);
+  const teleItem = c(".models .telescope-item").cloneNode(true);
 
   // puxa o ID dos produtos do telescope.js
   teleItem.setAttribute("data-key", index);
@@ -30,7 +30,7 @@ telescopeJson.map((item, index) => {
 
   teleItem.querySelector(
     ".telescope-item--price"
-  ).innerHTML = `R$ ${item.price.toFixed(2)}`;
+  ).innerHTML = `R$ ${item.price[0].toFixed(2)}`;
 
   teleItem.querySelector(".telescope-item--name").innerHTML = item.name;
   teleItem.querySelector(".telescope-item--desc").innerHTML = item.description;
@@ -40,7 +40,7 @@ telescopeJson.map((item, index) => {
     e.preventDefault();
 
     // vai sair do elemento 'a' e ir para o telescope item e puxar o atributo "data-key"
-    let key = e.target.closest(".telescope-item").getAttribute("data-key");
+    const key = e.target.closest(".telescope-item").getAttribute("data-key");
 
     modalQnt = 1;
 
@@ -49,9 +49,7 @@ telescopeJson.map((item, index) => {
     c(".telescopeBig img").src = telescopeJson[key].img;
     c(".telescopeInfo h1").innerHTML = telescopeJson[key].name;
     c(".telescopeInfo--desc").innerHTML = telescopeJson[key].description;
-    c(".telescopeInfo--actualPrice").innerHTML = `R$ ${telescopeJson[
-      key
-    ].price.toFixed(2)}`;
+    var actualPrice = 0;
 
     const father = document.querySelector(".telescopeInfo--sizes");
 
@@ -120,9 +118,11 @@ c(".telescopeInfo--qtmais").addEventListener("click", () => {
 });
 
 c(".telescopeInfo--addButton").addEventListener("click", () => {
-  let identifier = telescopeJson[itemKey].id + "@" + itemSelected;
+  const identifier = telescopeJson[itemKey].id + "@" + itemSelected;
 
-  let keyVerification = cart.findIndex((item) => item.identifier == identifier);
+  const keyVerification = cart.findIndex(
+    (item) => item.identifier == identifier
+  );
 
   if (keyVerification > -1) {
     cart[keyVerification].Qnt += modalQnt;
@@ -135,6 +135,7 @@ c(".telescopeInfo--addButton").addEventListener("click", () => {
     });
   }
   itemSelected = 0;
+  actualPrice = 0;
   updateCart();
   closeBox();
 });
@@ -162,14 +163,15 @@ function updateCart() {
 
     var total = 0;
 
-    for (let i in cart) {
-      let teleItem = telescopeJson.find((item) => item.id == cart[i].id);
-      subtotal += teleItem.price * cart[i].Qnt;
-      let cartItem = c(".models .cart--item").cloneNode(true);
-      let teleSizeName;
+    for (const i in cart) {
+      const teleItem = telescopeJson.find((item) => item.id == cart[i].id);
+      subtotal = teleItem.price[i] * cart[i].Qnt;
+      const cartItem = c(".models .cart--item").cloneNode(true);
+      var teleSizeName;
       switch (cart[i].size) {
         case 0:
           teleSizeName = "Tamanho 1";
+
           break;
         case 1:
           teleSizeName = "Tamanho 2";
@@ -182,7 +184,7 @@ function updateCart() {
           break;
       }
 
-      let teleName = `${teleItem.name} (${teleSizeName})`;
+      const teleName = `${teleItem.name} (${teleSizeName})`;
 
       cartItem.querySelector("img").src = teleItem.img;
       cartItem.querySelector(".cart--item-nome").innerHTML = teleName;
@@ -207,11 +209,10 @@ function updateCart() {
 
       c(".cart").append(cartItem);
     }
-
     desconto = subtotal * 0;
     total = subtotal - desconto;
 
-    c(".subtotal span:last-child").innerHTML = `R$ ${subtotal.toFixed(2)}`;
+    c(".subtotal span:last-child").innerHTML = `R$ ${subtotal}`;
     c(".desconto span:last-child").innerHTML = `R$ ${desconto.toFixed(2)}`;
     c(".total span:last-child").innerHTML = `R$ ${total.toFixed(2)}`;
   } else {
