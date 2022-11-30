@@ -16,7 +16,7 @@ let cart = [];
 
 let itemKey = 0;
 
-let itemSelected = null;
+let itemSelected = 0;
 
 telescopeJson.map((item, index) => {
   // prencher as informações em teleItem do telescope.js
@@ -30,7 +30,7 @@ telescopeJson.map((item, index) => {
 
   teleItem.querySelector(
     ".telescope-item--price"
-  ).innerHTML = `U$ ${item.price}`;
+  ).innerHTML = `R$ ${item.price.toFixed(2)}`;
 
   teleItem.querySelector(".telescope-item--name").innerHTML = item.name;
   teleItem.querySelector(".telescope-item--desc").innerHTML = item.description;
@@ -49,7 +49,7 @@ telescopeJson.map((item, index) => {
     c(".telescopeBig img").src = telescopeJson[key].img;
     c(".telescopeInfo h1").innerHTML = telescopeJson[key].name;
     c(".telescopeInfo--desc").innerHTML = telescopeJson[key].description;
-    c(".telescopeInfo--actualPrice").innerHTML = `U$ ${telescopeJson[
+    c(".telescopeInfo--actualPrice").innerHTML = `R$ ${telescopeJson[
       key
     ].price.toFixed(2)}`;
 
@@ -62,7 +62,6 @@ telescopeJson.map((item, index) => {
       sizeEl.addEventListener("click", (e) => {
         //  sizeEl.classList.toggle("selected");
         const sons = Array.from(father.children);
-        console.log(sons);
         sons.forEach((child) => {
           child.classList.remove("selected");
         });
@@ -135,18 +134,37 @@ c(".telescopeInfo--addButton").addEventListener("click", () => {
       Qnt: modalQnt,
     });
   }
+  itemSelected = 0;
   updateCart();
   closeBox();
 });
 
+c(".menu-openner").addEventListener("click", () => {
+  if (cart.length > 0) {
+    c("aside").style.left = "0";
+  }
+});
+c(".menu-closer").addEventListener("click", () => {
+  c("aside").style.left = "100vw";
+});
+
 function updateCart() {
+  c(".menu-openner span").innerHTML = cart.length;
+
   if (cart.length > 0) {
     c("aside").classList.add("show");
 
     c(".cart").innerHTML = "";
 
+    var subtotal = 0;
+
+    var desconto = 0;
+
+    var total = 0;
+
     for (let i in cart) {
       let teleItem = telescopeJson.find((item) => item.id == cart[i].id);
+      subtotal += teleItem.price * cart[i].Qnt;
       let cartItem = c(".models .cart--item").cloneNode(true);
       let teleSizeName;
       switch (cart[i].size) {
@@ -168,11 +186,36 @@ function updateCart() {
 
       cartItem.querySelector("img").src = teleItem.img;
       cartItem.querySelector(".cart--item-nome").innerHTML = teleName;
+      cartItem.querySelector(".cart--item--qt").innerHTML = cart[i].Qnt;
+      cartItem
+        .querySelector(".cart--item-qtmenos")
+        .addEventListener("click", () => {
+          if (cart[i].Qnt > 1) {
+            cart[i].Qnt--;
+          } else {
+            cart.splice(i, 1);
+          }
+          updateCart();
+        });
+      cartItem
+        .querySelector(".cart--item-qtmais")
+        .addEventListener("click", () => {
+          cart[i].Qnt++;
+          updateCart();
+        });
       //cartItem.querySelector(".cart--item-preco").innerHTML = teleItem.price;
 
       c(".cart").append(cartItem);
     }
+
+    desconto = subtotal * 0;
+    total = subtotal - desconto;
+
+    c(".subtotal span:last-child").innerHTML = `R$ ${subtotal.toFixed(2)}`;
+    c(".desconto span:last-child").innerHTML = `R$ ${desconto.toFixed(2)}`;
+    c(".total span:last-child").innerHTML = `R$ ${total.toFixed(2)}`;
   } else {
     c("aside").classList.remove("show");
+    c("aside").style.left = "100vw";
   }
 }

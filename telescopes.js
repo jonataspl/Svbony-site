@@ -3,8 +3,8 @@ let telescopeJson = [
     id: 1,
     name: "Sv 550 APO 80mm",
     img: "images/F9381A-SV550-11.jpg",
-    price: 859.0,
-    sizes: ["80mm F6.5"],
+    price: 4500.0,
+    sizes: ["80mm F6.5", "Sv550 + Flattener", "Sv550 + Flattener + Rotador"],
     description:
       "Descrição da Svbony em mais de uma linha muito legal bem interessante",
   },
@@ -39,7 +39,7 @@ let telescopeJson = [
     id: 5,
     name: "Sv 405 CC OSC Cooled Camera",
     img: "images/F9369A-SV405C--5.jpg",
-    price: 847.99,
+    price: 4500.0,
     sizes: ["No filter"],
     description:
       "Descrição da Svbony em mais de uma linha muito legal bem interessante",
@@ -48,7 +48,7 @@ let telescopeJson = [
     id: 6,
     name: "SV 305 Pro AR Planetary Camera",
     img: "images/F9198C-9---1-sv305pro.jpg",
-    price: 192.99,
+    price: 1099.9,
     sizes: ["UV/IR Filter"],
     description:
       "Descrição da Svbony em mais de uma linha muito legal bem interessante",
