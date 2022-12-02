@@ -129,6 +129,14 @@ function fecharModal() {
     c(".telescopeWindowArea").style.display = "none";
   }, 500);
 }
+function abrirMenuMob() {
+  if (cart.length > 0) {
+    c("aside").style.left = "0";
+  }
+}
+function fecharMenuMob() {
+  c("aside").style.left = "100vw";
+}
 
 telescopeJson.map((item, index) => {
   // prencher as informações em teleItem do telescope.js
@@ -208,19 +216,14 @@ telescopeJson.map((item, index) => {
   c(".telescope-area").append(teleItem);
 });
 
-cs(".telescopeInfo--cancelButton, .telescopeInfo--cancelMobileButton").forEach(
-  (item) => {
-    item.addEventListener("click", fecharModal);
-  }
-);
+cs(".telescopeInfo--cancelButton").forEach((item) => {
+  item.addEventListener("click", fecharModal);
+});
+cs(".telescopeInfo--cancelMobileButton").forEach((item) => {
+  item.addEventListener("click", fecharModal);
+});
 c(".telescopeInfo--qtmenos").addEventListener("click", diminuirQntCart);
 c(".telescopeInfo--qtmais").addEventListener("click", aumentarQntCart);
 c(".telescopeInfo--addButton").addEventListener("click", adicionarCarrinho);
-c(".menu-openner").addEventListener("click", () => {
-  if (cart.length > 0) {
-    c("aside").style.left = "0";
-  }
-});
-c(".menu-closer").addEventListener("click", () => {
-  c("aside").style.left = "100vw";
-});
+c(".menu-openner").addEventListener("click", abrirMenuMob);
+c(".menu-closer").addEventListener("click", fecharMenuMob);
