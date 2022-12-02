@@ -43,14 +43,15 @@ telescopeJson.map((item, index) => {
     const key = e.target.closest(".telescope-item").getAttribute("data-key");
 
     modalQnt = 1;
-
     itemKey = key;
 
     c(".telescopeBig img").src = telescopeJson[key].img;
     c(".telescopeInfo h1").innerHTML = telescopeJson[key].name;
     c(".telescopeInfo--desc").innerHTML = telescopeJson[key].description;
-    var actualPrice = 0;
+    var priceModal = (c(".telescopeInfo--actualPrice").innerHTML =
+      telescopeJson[key].price[0].toFixed(2));
 
+    //Dar o select no tamanho/opção do produto
     const father = document.querySelector(".telescopeInfo--sizes");
 
     father.innerHTML = "";
@@ -66,8 +67,11 @@ telescopeJson.map((item, index) => {
         // adiciona a classe selected no que vc clicou
         e.target.classList.add("selected");
         itemSelected = index;
+        priceModal = c(".telescopeInfo--actualPrice").innerHTML =
+          telescopeJson[key].price[itemSelected].toFixed(2);
       });
 
+      // animação da seleção
       sizeEl.classList.add("telescopeInfo--size");
       sizeEl.textContent = size;
       sizeEl.setAttribute(
@@ -92,6 +96,7 @@ telescopeJson.map((item, index) => {
   c(".telescope-area").append(teleItem);
 });
 
+// fechar modal
 function closeBox() {
   c(".telescopeWindowArea").style.opacity = 0;
   setTimeout(() => {
@@ -99,12 +104,14 @@ function closeBox() {
   }, 500);
 }
 
+//botão cancelar
 cs(".telescopeInfo--cancelButton, .telescopeInfo--cancelMobileButton").forEach(
   (item) => {
     item.addEventListener("click", closeBox);
   }
 );
 
+//diminuir quantidade de produtos
 c(".telescopeInfo--qtmenos").addEventListener("click", () => {
   if (modalQnt > 1) {
     modalQnt--;
@@ -112,18 +119,20 @@ c(".telescopeInfo--qtmenos").addEventListener("click", () => {
   }
 });
 
+//aumentar quantidade de produtos
 c(".telescopeInfo--qtmais").addEventListener("click", () => {
   modalQnt++;
   c(".telescopeInfo--qt").innerHTML = modalQnt;
 });
 
+//passar para o carrinho o produto + tamanho
 c(".telescopeInfo--addButton").addEventListener("click", () => {
   const identifier = telescopeJson[itemKey].id + "@" + itemSelected;
 
   const keyVerification = cart.findIndex(
     (item) => item.identifier == identifier
   );
-
+  //verificação de quantidade de itens no carrinho para tirar do carrinho ou fechar o carrinho
   if (keyVerification > -1) {
     cart[keyVerification].Qnt += modalQnt;
   } else {
@@ -135,11 +144,10 @@ c(".telescopeInfo--addButton").addEventListener("click", () => {
     });
   }
   itemSelected = 0;
-  actualPrice = 0;
   updateCart();
   closeBox();
 });
-
+//funcionamento do carrinho em smartphone
 c(".menu-openner").addEventListener("click", () => {
   if (cart.length > 0) {
     c("aside").style.left = "0";
@@ -148,7 +156,7 @@ c(".menu-openner").addEventListener("click", () => {
 c(".menu-closer").addEventListener("click", () => {
   c("aside").style.left = "100vw";
 });
-
+//atualizador do carrinho
 function updateCart() {
   c(".menu-openner span").innerHTML = cart.length;
 
@@ -162,16 +170,15 @@ function updateCart() {
     var desconto = 0;
 
     var total = 0;
-
+    // Funcionamento do carrinho
     for (const i in cart) {
       const teleItem = telescopeJson.find((item) => item.id == cart[i].id);
-      subtotal = teleItem.price[i] * cart[i].Qnt;
+      subtotal += teleItem.price[cart[i].size] * cart[i].Qnt;
       const cartItem = c(".models .cart--item").cloneNode(true);
       var teleSizeName;
       switch (cart[i].size) {
         case 0:
           teleSizeName = "Tamanho 1";
-
           break;
         case 1:
           teleSizeName = "Tamanho 2";

@@ -12,7 +12,7 @@ let telescopeJson = [
     id: 2,
     name: "Sv 503 ED",
     img: "images/F9359D-SV503-ED-Telescope.jpg",
-    price: [599],
+    price: [4500.0, 6000.0, 6520],
     sizes: ["70mm", "80mm", "102mm"],
     description:
       "Descrição da Svbony em mais de uma linha muito legal bem interessante",
