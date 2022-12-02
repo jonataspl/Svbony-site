@@ -1,3 +1,11 @@
+var modalQnt = 1;
+
+const cart = [];
+
+var itemKey = 0;
+
+var itemSelected = 0;
+
 function c(el) {
   // facilitador para querySelector
   return document.querySelector(el);
@@ -10,13 +18,117 @@ function c(el) {
 function cs(selector) {
   return document.querySelectorAll(selector);
 }
-var modalQnt = 1;
 
-const cart = [];
+function diminuirQntCart() {
+  if (modalQnt > 1) {
+    modalQnt--;
+    c(".telescopeInfo--qt").innerHTML = modalQnt;
+  }
+}
 
-var itemKey = 0;
+function aumentarQntCart() {
+  modalQnt++;
+  c(".telescopeInfo--qt").innerHTML = modalQnt;
+}
 
-var itemSelected = 0;
+function adicionarCarrinho() {
+  const identifier = telescopeJson[itemKey].id + "@" + itemSelected;
+
+  const keyVerification = cart.findIndex(
+    (item) => item.identifier == identifier
+  );
+  //verificação de quantidade de itens no carrinho para tirar do carrinho ou fechar o carrinho
+  if (keyVerification > -1) {
+    cart[keyVerification].Qnt += modalQnt;
+  } else {
+    cart.push({
+      identifier,
+      id: telescopeJson[itemKey].id,
+      size: itemSelected,
+      Qnt: modalQnt,
+    });
+  }
+  itemSelected = 0;
+  atualizarCarrinho();
+  fecharModal();
+}
+
+function atualizarCarrinho() {
+  c(".menu-openner span").innerHTML = cart.length;
+
+  if (cart.length > 0) {
+    c("aside").classList.add("show");
+
+    c(".cart").innerHTML = "";
+
+    var subtotal = 0;
+
+    var desconto = 0;
+
+    var total = 0;
+    // Funcionamento do carrinho
+    for (const i in cart) {
+      const teleItem = telescopeJson.find((item) => item.id == cart[i].id);
+      subtotal += teleItem.price[cart[i].size] * cart[i].Qnt;
+      const cartItem = c(".models .cart--item").cloneNode(true);
+      var teleSizeName;
+      switch (cart[i].size) {
+        case 0:
+          teleSizeName = "Tamanho 1";
+          break;
+        case 1:
+          teleSizeName = "Tamanho 2";
+          break;
+        case 2:
+          teleSizeName = "Tamanho 3";
+          break;
+        case null:
+          teleSizeName = "Tamanho 1";
+          break;
+      }
+
+      const teleName = `${teleItem.name} (${teleSizeName})`;
+
+      cartItem.querySelector("img").src = teleItem.img;
+      cartItem.querySelector(".cart--item-nome").innerHTML = teleName;
+      cartItem.querySelector(".cart--item--qt").innerHTML = cart[i].Qnt;
+      cartItem
+        .querySelector(".cart--item-qtmenos")
+        .addEventListener("click", () => {
+          if (cart[i].Qnt > 1) {
+            cart[i].Qnt--;
+          } else {
+            cart.splice(i, 1);
+          }
+          atualizarCarrinho();
+        });
+      cartItem
+        .querySelector(".cart--item-qtmais")
+        .addEventListener("click", () => {
+          cart[i].Qnt++;
+          atualizarCarrinho();
+        });
+      //cartItem.querySelector(".cart--item-preco").innerHTML = teleItem.price;
+
+      c(".cart").append(cartItem);
+    }
+    desconto = subtotal * 0;
+    total = subtotal - desconto;
+
+    c(".subtotal span:last-child").innerHTML = `R$ ${subtotal.toFixed(2)}`;
+    c(".desconto span:last-child").innerHTML = `R$ ${desconto.toFixed(2)}`;
+    c(".total span:last-child").innerHTML = `R$ ${total.toFixed(2)}`;
+  } else {
+    c("aside").classList.remove("show");
+    c("aside").style.left = "100vw";
+  }
+}
+function fecharModal() {
+  c(".telescopeWindowArea").style.opacity = 0;
+  setTimeout(() => {
+    c(".telescopeWindowArea").style.display = "none";
+  }, 500);
+}
 
 telescopeJson.map((item, index) => {
   // prencher as informações em teleItem do telescope.js
@@ -96,58 +208,14 @@ telescopeJson.map((item, index) => {
   c(".telescope-area").append(teleItem);
 });
 
-// fechar modal
-function closeBox() {
-  c(".telescopeWindowArea").style.opacity = 0;
-  setTimeout(() => {
-    c(".telescopeWindowArea").style.display = "none";
-  }, 500);
-}
-
-//botão cancelar
 cs(".telescopeInfo--cancelButton, .telescopeInfo--cancelMobileButton").forEach(
   (item) => {
-    item.addEventListener("click", closeBox);
+    item.addEventListener("click", fecharModal);
   }
 );
-
-//diminuir quantidade de produtos
-c(".telescopeInfo--qtmenos").addEventListener("click", () => {
-  if (modalQnt > 1) {
-    modalQnt--;
-    c(".telescopeInfo--qt").innerHTML = modalQnt;
-  }
-});
-
-//aumentar quantidade de produtos
-c(".telescopeInfo--qtmais").addEventListener("click", () => {
-  modalQnt++;
-  c(".telescopeInfo--qt").innerHTML = modalQnt;
-});
-
-//passar para o carrinho o produto + tamanho
-c(".telescopeInfo--addButton").addEventListener("click", () => {
-  const identifier = telescopeJson[itemKey].id + "@" + itemSelected;
-
-  const keyVerification = cart.findIndex(
-    (item) => item.identifier == identifier
-  );
-  //verificação de quantidade de itens no carrinho para tirar do carrinho ou fechar o carrinho
-  if (keyVerification > -1) {
-    cart[keyVerification].Qnt += modalQnt;
-  } else {
-    cart.push({
-      identifier,
-      id: telescopeJson[itemKey].id,
-      size: itemSelected,
-      Qnt: modalQnt,
-    });
-  }
-  itemSelected = 0;
-  updateCart();
-  closeBox();
-});
-//funcionamento do carrinho em smartphone
+c(".telescopeInfo--qtmenos").addEventListener("click", diminuirQntCart);
+c(".telescopeInfo--qtmais").addEventListener("click", aumentarQntCart);
+c(".telescopeInfo--addButton").addEventListener("click", adicionarCarrinho);
 c(".menu-openner").addEventListener("click", () => {
   if (cart.length > 0) {
     c("aside").style.left = "0";
@@ -156,74 +224,3 @@ c(".menu-openner").addEventListener("click", () => {
 c(".menu-closer").addEventListener("click", () => {
   c("aside").style.left = "100vw";
 });
-//atualizador do carrinho
-function updateCart() {
-  c(".menu-openner span").innerHTML = cart.length;
-
-  if (cart.length > 0) {
-    c("aside").classList.add("show");
-
-    c(".cart").innerHTML = "";
-
-    var subtotal = 0;
-
-    var desconto = 0;
-
-    var total = 0;
-    // Funcionamento do carrinho
-    for (const i in cart) {
-      const teleItem = telescopeJson.find((item) => item.id == cart[i].id);
-      subtotal += teleItem.price[cart[i].size] * cart[i].Qnt;
-      const cartItem = c(".models .cart--item").cloneNode(true);
-      var teleSizeName;
-      switch (cart[i].size) {
-        case 0:
-          teleSizeName = "Tamanho 1";
-          break;
-        case 1:
-          teleSizeName = "Tamanho 2";
-          break;
-        case 2:
-          teleSizeName = "Tamanho 3";
-          break;
-        case null:
-          teleSizeName = "Tamanho 1";
-          break;
-      }
-
-      const teleName = `${teleItem.name} (${teleSizeName})`;
-
-      cartItem.querySelector("img").src = teleItem.img;
-      cartItem.querySelector(".cart--item-nome").innerHTML = teleName;
-      cartItem.querySelector(".cart--item--qt").innerHTML = cart[i].Qnt;
-      cartItem
-        .querySelector(".cart--item-qtmenos")
-        .addEventListener("click", () => {
-          if (cart[i].Qnt > 1) {
-            cart[i].Qnt--;
-          } else {
-            cart.splice(i, 1);
-          }
-          updateCart();
-        });
-      cartItem
-        .querySelector(".cart--item-qtmais")
-        .addEventListener("click", () => {
-          cart[i].Qnt++;
-          updateCart();
-        });
-      //cartItem.querySelector(".cart--item-preco").innerHTML = teleItem.price;
-
-      c(".cart").append(cartItem);
-    }
-    desconto = subtotal * 0;
-    total = subtotal - desconto;
-
-    c(".subtotal span:last-child").innerHTML = `R$ ${subtotal}`;
-    c(".desconto span:last-child").innerHTML = `R$ ${desconto.toFixed(2)}`;
-    c(".total span:last-child").innerHTML = `R$ ${total.toFixed(2)}`;
-  } else {
-    c("aside").classList.remove("show");
-    c("aside").style.left = "100vw";
-  }
-}
