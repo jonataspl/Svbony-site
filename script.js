@@ -58,7 +58,6 @@ function atualizarCarrinho() {
 
   if (cart.length > 0) {
     c("aside").classList.add("show");
-
     c(".cart").innerHTML = "";
 
     var subtotal = 0;
@@ -92,6 +91,14 @@ function atualizarCarrinho() {
       cartItem.querySelector("img").src = teleItem.img;
       cartItem.querySelector(".cart--item-nome").innerHTML = teleName;
       cartItem.querySelector(".cart--item--qt").innerHTML = cart[i].Qnt;
+      cartItem
+        .querySelector(".cart--item-remove")
+        .addEventListener("click", () => {
+          cart[i].Qnt = 0;
+          cart.splice(i, 1);
+          atualizarCarrinho();
+        });
+
       cartItem
         .querySelector(".cart--item-qtmenos")
         .addEventListener("click", () => {
